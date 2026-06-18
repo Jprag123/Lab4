@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JavaScript Functions Lab — Janarthan Pragalathan</title>
+  <!-- script.js linked with defer so the DOM is ready before it runs -->
+  <script src="script.js" defer></script>
+  <style>
+    :root {
+      --paper:   #FBFAF7;
+      --ink:     #17171F;
+      --muted:   #6B6B78;
+      --line:    #E4E2DA;
+      --accent:  #4B3FE4;   /* signature violet */
+      --return:  #C8761B;   /* "return value" amber */
+      --panel:   #1A1A22;   /* code panel */
+      --panel-tx:#D7D7E0;
+      --ok:      #1F7A4D;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    code, pre, .mono { font-family: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Menlo, Consolas, monospace; }
+
+    .wrap { max-width: 880px; margin: 0 auto; padding: 0 24px 96px; }
+
+    /* ---- Header ---- */
+    header {
+      border-bottom: 1px solid var(--line);
+      padding: 64px 0 40px;
+      margin-bottom: 8px;
+    }
+    .eyebrow {
+      font-family: ui-monospace, monospace;
+      font-size: 12px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin: 0 0 14px;
+    }
+    h1 {
+      font-size: clamp(34px, 6vw, 56px);
+      line-height: 1.02;
+      letter-spacing: -0.02em;
+      margin: 0 0 18px;
+      font-weight: 800;
+    }
+    h1 .fn { color: var(--accent); }
+    .byline {
+      font-size: 15px;
+      color: var(--muted);
+      margin: 0;
+    }
+    .byline strong { color: var(--ink); font-weight: 700; }
+    .hint {
+      margin-top: 22px;
+      font-size: 13px;
+      color: var(--muted);
+      font-family: ui-monospace, monospace;
+    }
+    .hint kbd {
+      background: var(--ink); color: var(--paper);
+      border-radius: 4px; padding: 1px 6px; font-size: 11px;
+    }
+
+    /* ---- Sections ---- */
+    section {
+      padding: 44px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .part {
+      font-family: ui-monospace, monospace;
+      font-size: 12px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 0 0 8px;
+    }
+    h2 {
+      font-size: 24px;
+      margin: 0 0 6px;
+      letter-spacing: -0.01em;
+      font-weight: 750;
+    }
+    h2 .sig { color: var(--accent); font-family: ui-monospace, monospace; font-size: 0.78em; }
+    .desc { color: var(--muted); margin: 0 0 22px; max-width: 60ch; font-size: 15px; }
+
+    /* ---- Interactive panel ---- */
+    .play {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      padding: 18px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      margin-bottom: 18px;
+    }
+    .play label {
+      font-size: 12px;
+      color: var(--muted);
+      font-family: ui-monospace, monospace;
+      margin-right: -2px;
+    }
+    input[type="text"], input[type="number"] {
+      font: inherit;
+      font-size: 15px;
+      padding: 9px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+      color: var(--ink);
+      width: 130px;
+    }
+    input:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: transparent; }
+
+    button {
+      font: inherit;
+      font-weight: 650;
+      font-size: 14px;
+      padding: 9px 18px;
+      border: none;
+      border-radius: 8px;
+      background: var(--accent);
+      color: #fff;
+      cursor: pointer;
+      transition: transform .06s ease, background .15s ease;
+    }
+    button:hover { background: #3a2fd0; }
+    button:active { transform: translateY(1px); }
+    button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+    .out {
+      font-family: ui-monospace, monospace;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--return);
+      margin-left: auto;
+      padding: 8px 12px;
+      background: #FBF3E7;
+      border-radius: 8px;
+      min-width: 60px;
+      text-align: center;
+    }
+
+    /* ---- Code blocks ---- */
+    pre {
+      margin: 0;
+      background: var(--panel);
+      color: var(--panel-tx);
+      padding: 18px 20px;
+      border-radius: 12px;
+      overflow-x: auto;
+      font-size: 13.5px;
+      line-height: 1.7;
+    }
+    pre .k { color: #C792EA; }   /* keyword */
+    pre .f { color: #82AAFF; }   /* function name */
+    pre .s { color: #C3E88D; }   /* string */
+    pre .c { color: #6B7280; font-style: italic; } /* comment */
+
+    /* ---- Footer ---- */
+    footer {
+      padding-top: 40px;
+      font-size: 13px;
+      color: var(--muted);
+      text-align: center;
+      font-family: ui-monospace, monospace;
+    }
+    footer strong { color: var(--ink); }
+
+    @media (max-width: 560px) {
+      .out { margin-left: 0; width: 100%; }
+      header { padding-top: 44px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      button { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+
+    <header>
+      <p class="eyebrow">Web Development · JavaScript Lab</p>
+      <h1>Working with <span class="fn">functions()</span></h1>
+      <p class="byline">Submitted by <strong>Janarthan Pragalathan</strong> — declarations, parameters, return values, scope &amp; closures.</p>
+      <p class="hint">Try each function below. Every call is also logged to the console — open <kbd>F12</kbd> → Console to see the lab output.</p>
+    </header>
+
+    <!-- PART 1 -->
+    <section>
+      <p class="part">Part 1 · Step 1–2</p>
+      <h2>Declaring &amp; invoking <span class="sig">greet(name)</span></h2>
+      <p class="desc">Takes a name and returns a greeting string. Leave the box empty to see the bonus default value kick in.</p>
+      <div class="play">
+        <label for="greet-input">name =</label>
+        <input type="text" id="greet-input" placeholder="Janarthan" />
+        <button id="greet-run">greet()</button>
+        <span class="out" id="greet-output">—</span>
+      </div>
+      <pre><span class="k">function</span> <span class="f">greet</span>(name = <span class="s">"stranger"</span>) {   <span class="c">// default param = bonus</span>
+  <span class="k">return</span> <span class="s">"Hello, "</span> + name + <span class="s">"!"</span>;
+}</pre>
+    </section>
+
+    <!-- PART 2 -->
+    <section>
+      <p class="part">Part 2 · Step 3</p>
+      <h2>Parameters &amp; return values <span class="sig">addNumbers(a, b)</span></h2>
+      <p class="desc">Accepts two parameters and returns their sum.</p>
+      <div class="play">
+        <label for="add-a">a =</label>
+        <input type="number" id="add-a" value="5" />
+        <label for="add-b">b =</label>
+        <input type="number" id="add-b" value="7" />
+        <button id="add-run">addNumbers()</button>
+        <span class="out" id="add-output">—</span>
+      </div>
+      <pre><span class="k">function</span> <span class="f">addNumbers</span>(num1, num2) {
+  <span class="k">return</span> num1 + num2;
+}</pre>
+    </section>
+
+    <!-- PART 3 -->
+    <section>
+      <p class="part">Part 3 · Step 4</p>
+      <h2>Function scope <span class="sig">changeValue()</span></h2>
+      <p class="desc">A global <code>x = 10</code> stays untouched even though a local <code>x = 99</code> is declared inside the function. The local variable shadows the global — it doesn't replace it.</p>
+      <div class="play">
+        <button id="scope-run">run changeValue()</button>
+        <span class="out" id="scope-output">—</span>
+      </div>
+      <pre><span class="k">let</span> x = <span class="s">10</span>;            <span class="c">// global</span>
+
+<span class="k">function</span> <span class="f">changeValue</span>() {
+  <span class="k">let</span> x = <span class="s">99</span>;          <span class="c">// local — separate variable</span>
+  <span class="k">return</span> x;
+}</pre>
+    </section>
+
+    <!-- PART 4 -->
+    <section>
+      <p class="part">Part 4 · Step 5</p>
+      <h2>Closures <span class="sig">outerFunction()</span></h2>
+      <p class="desc">The inner function remembers <code>count</code> from its outer function and keeps incrementing it on every click — even after <code>outerFunction()</code> has finished running.</p>
+      <div class="play">
+        <button id="counter-run">counter()++</button>
+        <span class="out" id="counter-output">count = 0</span>
+      </div>
+      <pre><span class="k">function</span> <span class="f">outerFunction</span>() {
+  <span class="k">let</span> count = <span class="s">0</span>;
+  <span class="k">return</span> <span class="k">function</span>() {
+    count += <span class="s">1</span>;       <span class="c">// remembered between calls</span>
+    <span class="k">return</span> count;
+  };
+}</pre>
+    </section>
+
+    <!-- BONUS -->
+    <section>
+      <p class="part">Bonus · Another closure</p>
+      <h2>Accumulator <span class="sig">makeAccumulator()</span></h2>
+      <p class="desc">A different closure behaviour: instead of a fixed +1 step, this one keeps a running total of every number you add.</p>
+      <div class="play">
+        <label for="acc-input">add =</label>
+        <input type="number" id="acc-input" value="10" />
+        <button id="acc-run">accumulate()</button>
+        <span class="out" id="acc-output">running total = 0</span>
+      </div>
+      <pre><span class="k">function</span> <span class="f">makeAccumulator</span>() {
+  <span class="k">let</span> total = <span class="s">0</span>;
+  <span class="k">return</span> <span class="k">function</span>(amount) {
+    total += amount;
+    <span class="k">return</span> total;
+  };
+}</pre>
+    </section>
+
+    <footer>
+      <p>JavaScript Functions Lab · built by <strong>Janarthan Pragalathan</strong></p>
+    </footer>
+
+  </div>
+</body>
+</html>
